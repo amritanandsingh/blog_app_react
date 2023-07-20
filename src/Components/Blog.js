@@ -12,12 +12,9 @@ export default function Blog(){
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e) {
         e.preventDefault();
-        //const newBlog = { title, content };
-        // setTitle('');
-        // setContent('');
-        setBlog([ formData,...Blog]); // Use spread operator to append the new blog to the existing array
-        setFormData.title="";
-        setFormData.content="";
+       
+        setBlog([ {title:formData.title, content:formData.content},...Blog]); // Use spread operator to append the new blog to the existing array
+        setFormData({title:"",content:""});
     }
 
     return(
@@ -36,7 +33,7 @@ export default function Blog(){
                         <input className="input"
                                 placeholder="Enter the Title of the Blog here.."
                                 value={formData.title}
-                                onChange={(e)=>setFormData({title:e.target.value})}
+                                onChange={(e)=>setFormData({ ...formData,title:e.target.value})}
                                 />
                 </Row >
 
@@ -45,7 +42,7 @@ export default function Blog(){
                         <textarea className="input content"
                                 placeholder="Content of the Blog goes here.."
                                 value={formData.content}
-                                onChange={(e)=>setFormData({content: e.target.value})}
+                                onChange={(e)=>setFormData({ ...formData,content:e.target.value})}
                                 />
                 </Row >
 
