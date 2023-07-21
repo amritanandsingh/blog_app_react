@@ -1,14 +1,27 @@
-import { useState,useRef , useEffect } from "react";
+import { useState,useRef , useEffect, useReducer } from "react";
 
 //Blogging App using Hooks
+function blogReducer(state,action)
+{
+    switch(action.type)
+    {
+        case "ADD": 
+            return [action.blog,...state]; 
+        case "REMOVE":
+            return state.filter((blog,index)=>index !== action.index);
+        default:
+            return [];
+    }
+}
 export default function Blog(){
     // const [title, setTitle] = useState("");
     // const [content, setContent] = useState("");
 
     const [formData , setFormData ] = useState({title:"",content:""});
 
-    const [Blog, setBlog] = useState([]);
-    
+    //const [Blog, setBlog] = useState([]);
+    const [Blog,dispatch] = useReducer(blogReducer,[]);
+
     const titleRef = useRef('');        // set title ref first time with ''  value.
     
     useEffect(()=>{                     // to pinint ref at first render
@@ -30,14 +43,16 @@ export default function Blog(){
     function handleSubmit(e) {
         e.preventDefault();
        
-        setBlog([ {title:formData.title, content:formData.content},...Blog]); // Use spread operator to append the new blog to the existing array
-        
+        //setBlog([ {title:formData.title, content:formData.content},...Blog]); // Use spread operator to append the new blog to the existing array
+        dispatch({type:"ADD" ,blog:{title:formData.title, content:formData.content} });
+
         setFormData({title:"",content:""});
         titleRef.current.focus();
     }
     function removeBlog(i)
     {
-        setBlog(Blog.filter((blog,index)=>i!==index));
+        //setBlog(Blog.filter((blog,index)=>i!==index));
+        dispatch({type:"REMOVE",index:i});
     }
     return(
         <>
