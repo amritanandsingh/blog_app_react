@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useRef , useEffect } from "react";
 
 //Blogging App using Hooks
 export default function Blog(){
@@ -9,14 +9,36 @@ export default function Blog(){
 
     const [Blog, setBlog] = useState([]);
     
+    const titleRef = useRef('');        // set title ref first time with ''  value.
+    
+    useEffect(()=>{                     // to pinint ref at first render
+        titleRef.current.focus();} ,[]);
+    
+    useEffect(()=>{
+        if(Blog.length && Blog[0].title.length)
+        {
+            document.title=Blog[0].title;
+        }
+        else{
+            document.title="No Blogs!!";
+        }
+        
+       
+    },[Blog]);
+    
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e) {
         e.preventDefault();
        
         setBlog([ {title:formData.title, content:formData.content},...Blog]); // Use spread operator to append the new blog to the existing array
+        
         setFormData({title:"",content:""});
+        titleRef.current.focus();
     }
-
+    function removeBlog(i)
+    {
+        setBlog(Blog.filter((blog,index)=>i!==index));
+    }
     return(
         <>
         {/* Heading of the page */}
@@ -33,6 +55,7 @@ export default function Blog(){
                         <input className="input"
                                 placeholder="Enter the Title of the Blog here.."
                                 value={formData.title}
+                                ref = {titleRef}
                                 onChange={(e)=>setFormData({ ...formData,title:e.target.value})}
                                 />
                 </Row >
@@ -42,6 +65,7 @@ export default function Blog(){
                         <textarea className="input content"
                                 placeholder="Content of the Blog goes here.."
                                 value={formData.content}
+                                required
                                 onChange={(e)=>setFormData({ ...formData,content:e.target.value})}
                                 />
                 </Row >
@@ -59,8 +83,13 @@ export default function Blog(){
             {
             Blog.map((blog, i) => (
                 <div className="blog" key={i}>
-                <h3>{blog.title}</h3>
-                <p>{blog.content}</p>
+                    <h3>{blog.title}</h3>
+                    <p>{blog.content}</p>
+                    <div className="blog-btn">
+                        <button onClick={()=>removeBlog(i)} className="btn remove">
+                            Delete
+                        </button>
+                    </div> 
                 </div>
             ))
             }
