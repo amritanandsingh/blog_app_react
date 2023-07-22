@@ -1,5 +1,7 @@
 //Blogging App with firebase
 import { useState, useRef, useEffect } from "react";
+import {db} from "../firebaseInit"; 
+import { collection, addDoc} from "firebase/firestore"; 
 
 export default function Blog(){
 
@@ -15,9 +17,16 @@ export default function Blog(){
     async function handleSubmit(e){
         e.preventDefault();
         titleRef.current.focus();
-
         setBlogs([{title: formData.title,content:formData.content}, ...blogs]);
         
+        const docRef = collection(db, "blogs");
+            
+        await addDoc(docRef, {
+                title: formData.title,
+                content: formData.content,
+                createdOn: new Date()
+            });
+
         setformData({title: "", content: ""});
     }
 
