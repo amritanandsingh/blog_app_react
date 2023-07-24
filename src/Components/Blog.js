@@ -1,17 +1,36 @@
 //Blogging App with firebase
 import { useState, useRef, useEffect } from "react";
 import {db} from "../firebaseInit"; 
-import { collection, addDoc} from "firebase/firestore"; 
+import { collection, addDoc ,doc  ,getDocs } from "firebase/firestore"; 
 
 export default function Blog(){
 
     const [formData, setformData] = useState({title:"", content:""})
-    const [blogs, setBlogs] =  useState([]);
-
+    let [blogs, setBlogs] =  useState([]);
+    
     const titleRef = useRef(null);
 
     useEffect(() => {
         titleRef.current.focus()
+    },[]);
+
+    useEffect(()=>{
+        
+        async function fetchData(){
+            const snapShot= await getDocs(collection(db, "blogs"));
+            //console.log(snapShot);
+            
+            const blogs = snapShot.docs.map((doc)=>{
+                return{
+                    id:doc.id,
+                    ...doc.data()
+                }
+            })
+            console.log(blogs);
+            setBlogs(blogs);
+        }
+        fetchData();
+
     },[]);
 
     async function handleSubmit(e){
@@ -19,7 +38,7 @@ export default function Blog(){
         titleRef.current.focus();
         setBlogs([{title: formData.title,content:formData.content}, ...blogs]);
         
-        const docRef = collection(db, "blogs");
+        const docRef = doc(collection(db, "blogs"));
             
         await addDoc(docRef, {
                 title: formData.title,
@@ -29,6 +48,8 @@ export default function Blog(){
 
         setformData({title: "", content: ""});
     }
+
+    
 
     async function removeBlog(i){
 
@@ -70,6 +91,7 @@ export default function Blog(){
 
         {/* Section where submitted blogs will be displayed */}
         <h2> Blogs </h2>
+
         {blogs.map((blog,i) => (
             <div className="blog" key={i}>
                 <h3>{blog.title}</h3>
