@@ -1,7 +1,7 @@
 //Blogging App with firebase
 import { useState, useRef, useEffect } from "react";
 import {db} from "../firebaseInit"; 
-import { collection, addDoc ,doc  ,getDocs } from "firebase/firestore"; 
+import { collection ,doc  ,onSnapshot ,setDoc} from "firebase/firestore"; 
 
 export default function Blog(){
 
@@ -16,33 +16,28 @@ export default function Blog(){
 
     useEffect(()=>{
         
-        async function fetchData(){
-            const snapShot= await getDocs(collection(db, "blogs"));
-            //console.log(snapShot);
-            
-            const blogs = snapShot.docs.map((doc)=>{
-                return{
-                    id:doc.id,
-                    ...doc.data()
-                }
-            })
-            console.log(blogs);
-            setBlogs(blogs);
-        }
-        fetchData();
-
+            onSnapshot(collection(db,"blogs"), (snapShot) => {
+            const blogs = snapShot.docs.map((doc) => {
+                    return{
+                        id: doc.id,
+                        ...doc.data()
+                    }
+                })
+                console.log(blogs);
+                setBlogs(blogs);
+        })
     },[]);
 
     async function handleSubmit(e){
         e.preventDefault();
         titleRef.current.focus();
-        setBlogs([{title: formData.title,content:formData.content}, ...blogs]);
-        
+        //setBlogs([{title: formData.title,content:formData.content}, ...blogs]);
+        //console.log(e.target[0].value);
         const docRef = doc(collection(db, "blogs"));
             
-        await addDoc(docRef, {
-                title: formData.title,
-                content: formData.content,
+        await setDoc(docRef, {
+                title: e.target[0].value,
+                content: e.target[1].value,
                 createdOn: new Date()
             });
 
