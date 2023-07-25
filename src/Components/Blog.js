@@ -1,7 +1,7 @@
 //Blogging App with firebase
 import { useState, useRef, useEffect } from "react";
 import {db} from "../firebaseInit"; 
-import { collection ,doc  ,onSnapshot ,setDoc} from "firebase/firestore"; 
+import { collection ,deleteDoc,doc  ,onSnapshot ,setDoc} from "firebase/firestore"; 
 
 export default function Blog(){
 
@@ -48,8 +48,9 @@ export default function Blog(){
 
     async function removeBlog(i){
 
-        setBlogs( blogs.filter((blog,index)=> index !== i));
- 
+        //setBlogs( blogs.filter((blog,index)=> index !== i));
+        const docRef = doc(db,"blogs",i);
+        await deleteDoc(docRef);
      }
 
     return(
@@ -95,7 +96,7 @@ export default function Blog(){
 
                 <div className="blog-btn">
                         <button onClick={() => {
-                             removeBlog(i)
+                             removeBlog(blog.id)
                         }}
                         className="btn remove">
 
